@@ -1,19 +1,19 @@
-import os
+from pathlib import Path
 
 def walk_dir(path):
     result = []
-    for name in os.listdir(path):
-        full_path = os.path.join(path, name)  # полный путь к файлу
-        if os.path.isfile(full_path):  # если это файл
-            size = os.path.getsize(full_path)  # размер файла
-            mode = oct(os.stat(full_path).st_mode)[-3:]  # права доступа
-            result.append((full_path, size, mode))
-        elif os.path.isdir(full_path):  # если это папка
-            result.extend(walk_dir(full_path))  # рекурсивный обход
+    base_path = Path(path)
+
+    for name in base_path.rglob('*'):  # рекурсивно ищем
+        full_path = name  # full_path объект Path
+        if full_path.is_file():  # проверка, что это файл
+            size = full_path.stat().st_size  # размер файла
+            mode = oct(full_path.stat().st_mode)[-3:]  # права доступа
+            result.append((str(full_path), size, mode))  # добавляем в список
+
     return result
 
 path = input("Введите путь к папке: ")
-
 files = walk_dir(path)
 
 for f in files:
